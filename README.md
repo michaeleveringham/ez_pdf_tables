@@ -183,6 +183,7 @@ t = StandardTable(
 )
 t.get()
 ```
+![](https://github.com/LamerLink/ez_pdf_tables/blob/main/photos/default.png?raw=true)
 
 ### Borderless and Subtitles
 
@@ -197,6 +198,7 @@ t = StandardTable(
 )
 t.get()
 ```
+![](https://github.com/LamerLink/ez_pdf_tables/blob/main/photos/borderless_subtitle.png?raw=true)
 
 ### Using Bolds
 
@@ -210,7 +212,9 @@ t = StandardTable(
 )
 t.get()
 ```
+![](https://github.com/LamerLink/ez_pdf_tables/blob/main/photos/bold1.png?raw=true)
 However, it can be problematic if values are repeated in multiple columns.
+![](https://github.com/LamerLink/ez_pdf_tables/blob/main/photos/bold2.png?raw=true)
 In this case, using `bold_criteria_index` with `bold_criteria` can narrow the search.
 ```python
 t = StandardTable(
@@ -222,6 +226,7 @@ t = StandardTable(
 )
 t.get()
 ```
+![](https://github.com/LamerLink/ez_pdf_tables/blob/main/photos/bold3.png?raw=true)
 Of course, if an entire column should always be bold, using `bold_criteria_index` alone works, too.
 ```python
 t = StandardTable(
@@ -232,6 +237,7 @@ t = StandardTable(
 )
 t.get()
 ```
+
 Sometimes it may be desirable to embolden the entire row if the row contains some criteria. This can be defined similar to the above, by cell contents, in `bold_row_criteria`.
 ```python
 t = StandardTable(
@@ -242,6 +248,7 @@ t = StandardTable(
 )
 t.get()
 ```
+![](https://github.com/LamerLink/ez_pdf_tables/blob/main/photos/bold4.png?raw=true)
 Combining all of these is possible, but likely unnecessary.
 ```python
 t = StandardTable(
@@ -254,6 +261,7 @@ t = StandardTable(
 )
 t.get()
 ```
+![](https://github.com/LamerLink/ez_pdf_tables/blob/main/photos/bold5.png?raw=true)
 
 ### Multiindex Tables
 
@@ -266,3 +274,4 @@ t = StandardTable(mi, r"C:\some\mi.pdf", 'Team Scores')
 t.borderless = True #These look great borderless
 t.get()
 ```
+![](https://github.com/LamerLink/ez_pdf_tables/blob/main/photos/multiindex.png?raw=true)

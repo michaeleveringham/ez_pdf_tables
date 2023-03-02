@@ -1,36 +1,41 @@
 import os
-import pandas as pd
 from typing import Union
-from .tables import df_columns_to_text
+
+import pandas as pd
+
+from ez_pdf_tables.tables import df_columns_to_text
 
 
-# Updates index on a dataframe to multiple
+
 def _make_multiindex(
     df: pd.DataFrame,
     indices: list
 ) -> pd.DataFrame:
+    """Updates index on a dataframe to multiple."""
     if not isinstance(indices, list) or len(indices) == 0:
         raise ValueError('Indices must be a non-empty list.')
     df.set_index(indices, inplace=True)
     df.sort_index(inplace=True)
     return df
 
-'''
-    Set a multiindex df to be printable exactly as it looks,
-    with empty values below top value such that the console printable
-    multiindex is exportable to file.
-'''
+
 def multiindex_as_is(
     source: Union[str, pd.DataFrame],
     make_multiindex_with_indices: list
 ) -> pd.DataFrame:
+    """
+    Set a multiindex df to be printable exactly as it looks,
+    with empty values below top value such that the console printable
+    multiindex is exportable to file.
+    """
     if isinstance(source, pd.DataFrame):
         df = source
         if isinstance(df.index, pd.MultiIndex):
             msg = (
-                'The dataframe already contains a multiindex, this would truncate'
-                ' additional indices. Pass the dataframe with a single index and'
-                ' supply the multiindex values to "make_multiindex_with_indices".'
+                'The dataframe already contains a multiindex, this would'
+                ' truncate additional indices. Pass the dataframe with a single'
+                ' index and supply the multiindex values to '
+                '"make_multiindex_with_indices".'
             )
             raise ValueError(msg)
     elif os.path.isfile(os.path.abspath(source)):

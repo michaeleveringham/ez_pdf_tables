@@ -1,25 +1,32 @@
 
 # ez_pdf_tables
 
-An easy interface to quickly make PDF reports from CSV or DataFrames.
+Quickly make PDF tables.
 
 ## Requirements and Supported Environments
-Python 3.7+ and Windows or Linux (tested on Ubuntu 20.04.3). MacOS is currently not supported as I don't have a MacOS machine to readily test on.
+
+Python 3.7+ and Windows or Linux (tested on Ubuntu 20.04.3).
 
 This package is dependent on the following Pythjon packages.
 * [reportlab](https://pypi.org/project/reportlab/) 3.5+
 * [pandas](https://pypi.org/project/pandas/) 1.3+
 
 ## Installation
-Either clone the repo or use `pip` to install.
 
-```pip install ez-pdf-tables```
+Install via pypi.
+
+```
+pip install ez-pdf-tables
+```
 
 ## Usage
+
 To create a table, an existing dataset is needed. This can be a path to a CSV file, a pandas `DataFrame` object, or a list of lists.
 
 Provide this along with a destination file and title when instantiating the `StandardTable` object.
 ```python
+from ez_pdf_tables import StandardTable
+
 t = StandardTable(
 	r'C:\some\dataset.csv',
 	r'C:\some\destination.pdf',
@@ -31,12 +38,19 @@ This creates the object, but not the PDF itself. To finish creation, call the `g
 ```python
 report_pdf = t.get()
 ```
-`StandardTable` also has an optional `default_leadings` parameter, which is set to `True` by default. This option sets the `leading` attribute for all defined `ez_pdf_tables` styles in `ALL_CUSTOM_STYLES` to automatically account for the font size.
 
-Any styles within or added to `ALL_CUSTOM_STYLES` list will be updated when ***any***  `StandardTable` is instantiated with `default_leadings` set to `True` and/or `StandardTable.get` is called with `update_leadings` set to `True`.
+`StandardTable` also has an optional `default_leadings` parameter, which is set to `True` by default.
+This option sets the `leading` attribute for all defined `ez_pdf_tables` styles in `ALL_CUSTOM_STYLES`
+to automatically account for the font size.
+
+Any styles within or added to `ALL_CUSTOM_STYLES` list will be updated when ***any***
+`StandardTable` is instantiated with `default_leadings` set to `True` and/or `StandardTable.get`
+is called with `update_leadings` set to `True`.
 
 ### Customization
-You can optionally set numerous attributes that make table manipulation simple. A list of all of the possible attributes is in the Table Attributes section below.
+
+You can optionally set numerous attributes that make table manipulation simple.
+A list of all of the possible attributes is in the Table Attributes section below.
 ```python
 from ez_pdf_tables import StandardTable
 
@@ -49,8 +63,11 @@ t = StandardTable(
 )
 t.get()
 ```
-Alternatively, all attributes can be set after instantiation. The below produces the same result as the above
+
+Alternatively, all attributes can be set after instantiation. The below produces the same result as the above.
 ```python
+from ez_pdf_tables import StandardTable
+
 t = StandardTable(
 	'/some/dataset.csv',
 	'/some/destination.pdf',
@@ -61,9 +78,17 @@ t.borderless = True
 t.get()
 ```
 #### Be Aware
-There are a few options that may conflict with one another, or override each other. For instance, `table_style_override` will ignore `borderless`, since it is expected the user will specify exactly their custom `reportlab.lib.styles.ParagraphStyle` object.
 
-### All `StandardTable` Attributes
+There are a few options that may conflict with one another, or override each other.
+For instance, `table_style_override` will ignore `borderless`, since it is expected the user
+will specify exactly their custom `reportlab.lib.styles.ParagraphStyle` object.
+
+## To Do
+
+* Documentation.
+* Ambiguous variable names - some variables are named poorly.
+
+## All `StandardTable` Attributes
 
 This section explains all the possible attributes that can manipulate a table's appearance, and their default values.
 
@@ -156,9 +181,11 @@ All included styles in `ez_pdf_tables` are added to the `ALL_CUSTOM_STYLES` list
 	* Each sets `backColor` initially to a preset `reportlab.lib.colors` option and then overwrites it. This is left as an example of what can be done.
 
 ### Additional Features
-When creating PDF reports, it can be advantageous to produce a multiindex dataset without repeating the indices. This package contains a tool for just that, `multiindex_as_is`.
+When creating PDF reports, it can be advantageous to produce a multiindex dataset without repeating the indices.
+This package contains a method for just that, `multiindex_as_is`.
 
-In `pandas`,  a multiindex can be set on a `DataFrame` via passing a list of target indices to `pandas.DataFrame.set_index`. The same logic will apply here.
+In `pandas`,  a multiindex can be set on a `DataFrame` via passing a list of target
+indices to `pandas.DataFrame.set_index`. The same logic will apply here.
 ```python
 from ez_pdf_tables import multiindex_as_is
 
@@ -166,7 +193,7 @@ df = pd.read_csv(r'C:\some\dataset.csv')
 df = multiindex_as_is(df, ['List', 'Of', 'Indices'])
 ```
 
-Using this function can produce some pleasant tables. See examples for a full example.
+Using this method can produce some pleasant tables. See examples for a full example.
 
 ## Examples
 
@@ -183,7 +210,7 @@ t = StandardTable(
 )
 t.get()
 ```
-![](https://github.com/LamerLink/ez_pdf_tables/blob/main/photos/default.png?raw=true)
+!["A default table."](https://github.com/LamerLink/ez_pdf_tables/blob/main/photos/default.png?raw=true)
 
 ### Borderless and Subtitles
 
@@ -198,9 +225,9 @@ t = StandardTable(
 )
 t.get()
 ```
-![](https://github.com/LamerLink/ez_pdf_tables/blob/main/photos/borderless_subtitle.png?raw=true)
+!["A borderless table with subtitles."](https://github.com/LamerLink/ez_pdf_tables/blob/main/photos/borderless_subtitle.png?raw=true)
 
-### Using Bolds
+### Using Bold
 
 Specifying values in the `bold_criteria` parameter is a simple way to apply bold selectively.
 ```python
@@ -212,9 +239,11 @@ t = StandardTable(
 )
 t.get()
 ```
-![](https://github.com/LamerLink/ez_pdf_tables/blob/main/photos/bold1.png?raw=true)
+!["A table with bold_criteria."](https://github.com/LamerLink/ez_pdf_tables/blob/main/photos/bold1.png?raw=true)
+
 However, it can be problematic if values are repeated in multiple columns.
-![](https://github.com/LamerLink/ez_pdf_tables/blob/main/photos/bold2.png?raw=true)
+!["A problematic table with bold_criteria."](https://github.com/LamerLink/ez_pdf_tables/blob/main/photos/bold2.png?raw=true)
+
 In this case, using `bold_criteria_index` with `bold_criteria` can narrow the search.
 ```python
 t = StandardTable(
@@ -226,7 +255,8 @@ t = StandardTable(
 )
 t.get()
 ```
-![](https://github.com/LamerLink/ez_pdf_tables/blob/main/photos/bold3.png?raw=true)
+!["A table with bold_criteria_index."](https://github.com/LamerLink/ez_pdf_tables/blob/main/photos/bold3.png?raw=true)
+
 Of course, if an entire column should always be bold, using `bold_criteria_index` alone works, too.
 ```python
 t = StandardTable(
@@ -238,7 +268,8 @@ t = StandardTable(
 t.get()
 ```
 
-Sometimes it may be desirable to embolden the entire row if the row contains some criteria. This can be defined similar to the above, by cell contents, in `bold_row_criteria`.
+Sometimes it may be desirable to embolden the entire row if the row contains some criteria.
+This can be defined similar to the above, by cell contents, in `bold_row_criteria`.
 ```python
 t = StandardTable(
 	r"C:\some\dataset.csv",
@@ -248,7 +279,8 @@ t = StandardTable(
 )
 t.get()
 ```
-![](https://github.com/LamerLink/ez_pdf_tables/blob/main/photos/bold4.png?raw=true)
+!["A table with bold_row_criteria."](https://github.com/LamerLink/ez_pdf_tables/blob/main/photos/bold4.png?raw=true)
+
 Combining all of these is possible, but likely unnecessary.
 ```python
 t = StandardTable(
@@ -261,7 +293,7 @@ t = StandardTable(
 )
 t.get()
 ```
-![](https://github.com/LamerLink/ez_pdf_tables/blob/main/photos/bold5.png?raw=true)
+!["A table with all bold options."](https://github.com/LamerLink/ez_pdf_tables/blob/main/photos/bold5.png?raw=true)
 
 ### Multiindex Tables
 
@@ -271,7 +303,7 @@ from ez_pdf_tables import multiindex_as_is, StandardTable
 
 mi = multiindex_as_is(r"C:\some\dataset.csv", ['Team','Score'])
 t = StandardTable(mi, r"C:\some\mi.pdf", 'Team Scores')
-t.borderless = True #These look great borderless
+t.borderless = True # These look great borderless
 t.get()
 ```
-![](https://github.com/LamerLink/ez_pdf_tables/blob/main/photos/multiindex.png?raw=true)
+!["A multiindex table."](https://github.com/LamerLink/ez_pdf_tables/blob/main/photos/multiindex.png?raw=true)

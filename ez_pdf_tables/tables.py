@@ -1,20 +1,24 @@
 import csv
 import warnings
-import pandas as pd
-from .resources import as_text, df_columns_to_text
+
 from typing import List, Tuple, Union, Any
-from textwrap import TextWrapper
+
+import pandas as pd
 from reportlab.lib import colors
-from reportlab.pdfgen import canvas
-from reportlab.lib.units import inch
-from reportlab.platypus.tables import Table
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle, TA_CENTER
+from reportlab.lib.units import inch
+from reportlab.pdfgen import canvas
 from reportlab.platypus import (
     SimpleDocTemplate,
     KeepTogether,
     Paragraph,
     TableStyle
 )
+from reportlab.platypus.tables import Table
+from textwrap import TextWrapper
+
+from ez_pdf_tables.resources import as_text, df_columns_to_text
+
 
 
 HALF_INCH = inch * .5
@@ -22,56 +26,71 @@ A4LETTER = (913.92, 666.96)
 
 # Define some default styles
 STYLES = getSampleStyleSheet()
+
 NORMAL_STYLE = STYLES['Normal']
+
 HEADING_STYLE = STYLES['Heading5']
+
 TITLE_STYLE = STYLES['Title']
 TITLE_STYLE.alignment = 1
 TITLE_STYLE.fontSize = 48
 TITLE_STYLE.fontName = 'Helvetica'
+
 SUBTITLE_STYLE = ParagraphStyle(
     'Subtitle',
     parent=STYLES['Title'],
     fontSize=22,
-    spaceAfter=6)
+    spaceAfter=6
+)
+
 BOLD_STYLE = ParagraphStyle(
     'NormalBold',
     parent=STYLES['Normal'],
     fontName='Helvetica-Bold',
 )
+
 CENTERED_STYLE = ParagraphStyle(
     'NormalCenter',
     parent=STYLES['Normal'],
     alightment=TA_CENTER,
 )
+
 SMALL_STYLE = ParagraphStyle(
     'Small',
     parent=STYLES['Normal'],
     fontSize=6,
 )
+
 BLUE_HIGHLIGHT_STYLE = ParagraphStyle(
     'BlueHighlight',
     parent=STYLES['Normal'],
     backColor=colors.blue,
 )
+
 YELLOW_HIGHLIGHT_STYLE = ParagraphStyle(
     'YellowHighlight',
     parent=STYLES['Normal'],
     backColor=colors.yellow,
 )
+
 GREEN_HIGHLIGHT_STYLE = ParagraphStyle(
     'GreenHighlight',
     parent=STYLES['Normal'],
     backColor=colors.green,
 )
+
 BLUE_HIGHLIGHT_STYLE.backColor = colors.PCMYKColor(
     25, 0, 0, 0
 )
+
 YELLOW_HIGHLIGHT_STYLE.backColor = colors.PCMYKColor(
     0, 0, 33, 0
 )
+
 GREEN_HIGHLIGHT_STYLE.backColor = colors.PCMYKColor(
     25, 0, 25, 0
 )
+
 STYLES.add(SUBTITLE_STYLE)
 STYLES.add(BOLD_STYLE)
 STYLES.add(CENTERED_STYLE)
@@ -79,6 +98,7 @@ STYLES.add(SMALL_STYLE)
 STYLES.add(BLUE_HIGHLIGHT_STYLE)
 STYLES.add(YELLOW_HIGHLIGHT_STYLE)
 STYLES.add(GREEN_HIGHLIGHT_STYLE)
+
 ALL_CUSTOM_STYLES = [
     NORMAL_STYLE,
     HEADING_STYLE,
@@ -92,16 +112,19 @@ ALL_CUSTOM_STYLES = [
     GREEN_HIGHLIGHT_STYLE
 ]
 
-# This function updates the leading attribute in all styles
+
 def update_all_leadings() -> None:
+    """Update the leading attribute in all styles."""
     for i in ALL_CUSTOM_STYLES:
         i.leading = i.fontSize * 1.2
 
-# Convert a column's data to text in-place
+
 def columns_to_text(data: List[list], column_list: list) -> None:
+    """Convert a column's data to text in-place."""
     for i in data:
         for v in column_list:
             i[v] = as_text(i[v], remove_decimal=True)
+
 
 class StandardTable():
     def __init__(
@@ -179,8 +202,8 @@ class StandardTable():
         if default_leadings:
             update_all_leadings()
 
-    # Determine if re-arrangement is needed
     def _keep_column_calc(self, column_count: int) -> bool:
+        """Determine if data re-arrangement is needed."""
         # If omit or keep column list, determine if any rearrangement is needed
         # by comparing the sorted values for each.
         if not self.order_column_list:
@@ -198,8 +221,8 @@ class StandardTable():
         else:
             return False
 
-    # Read the data from the CSV file
     def _read_data(self, omit_column_list: list) -> List[list]:
+        """Read the data from the CSV file."""
         truncated_data = []
         if not omit_column_list:
             omit_column_list = []
@@ -231,15 +254,15 @@ class StandardTable():
             truncated_data = rearranged_data
         return truncated_data
 
-    '''
-    Dynamically calculate the max widths of each cell, based on length of
-    header cell contents but as a ratio to the overall max page width.
-    '''
     def _autofit(
         self,
         data: List[list],
         page_width: Union[int, float]
     ) -> list:
+        """
+        Dynamically calculate the max widths of each cell, based on length of
+        header cell contents but as a ratio to the overall max page width.
+        """
         # Create list of 0s in length of column size.
         sizes = [0 for i in enumerate(data[0])]
         for i in data:
@@ -260,13 +283,13 @@ class StandardTable():
             (i / total_size * self.table_scale * page_width * .97) for i in sizes
         ]
 
-    # Set the style for cells
     def _stylise(
         self,
         data: List[list],
         cell_style: ParagraphStyle,
         header_style: ParagraphStyle
     ) -> List[list]:
+        """Set the style for cells."""
         # Map values and style to cells
         for index, row in enumerate(data):
             # Standard style assumed by default
@@ -321,25 +344,28 @@ class StandardTable():
                     selected_style = cell_style
         return data
 
-    # Call the autofit and stylise functions to prepare values for formatting
     def _format_cells(
         self,
         data: List[list],
         cell_style: ParagraphStyle,
         header_style: ParagraphStyle
     ) -> Tuple[list, List[list]]:
+        """
+        Convenience method to call the autofit and stylise methods to
+        prepare values for formatting.
+        """
         return (
             self._autofit(data, self.page_width),
             self._stylise(data, cell_style, header_style)
         )
 
-    # Create the table object
     def _assemble_table(
         self,
         in_data:
         List[list],
         row_heights: bool = False
     ) -> Table:
+        """Create the table object and auto-check a few attributes."""
         column_widths, data = self._format_cells(
             in_data,
             self.cell_style,
@@ -383,23 +409,23 @@ class StandardTable():
             )
         return t
 
-    # Set the fonts to be proportionate
     def _make_fonts_consistent(self) -> None:
+        """Set the fonts to be proportionate."""
         NORMAL_STYLE.fontSize = self.cell_fontsize
         BOLD_STYLE.fontSize = self.cell_fontsize
         HEADING_STYLE.fontSize = NORMAL_STYLE.fontSize
 
-    # Assemble the final pdf
     def _finish(self, pdf_report: SimpleDocTemplate) -> str:
+        """Assemble the final pdf."""
         pdf_report.build(self.elements)
         return pdf_report.filename
 
-    # Function to create the table after instantiation
     def get(
         self,
         consistent_fonts: bool = True,
         update_leadings: bool = True
     ) -> str:
+        """create the table after instantiation."""
         data = self._read_data(self.omit_column_list)
         if self.columns_as_text:
             columns_to_text(data, self.columns_as_text)

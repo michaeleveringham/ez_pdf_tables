@@ -1,5 +1,5 @@
 build/
 dist/
-ez_pdf_tables/__pycache__
-ez_pdf_tables.egg-info/
-make.py
+__pycache__/
+*.egg-info/
+.vscode/

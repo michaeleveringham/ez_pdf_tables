@@ -10,7 +10,6 @@ homepage = "https://github.com/michaeleveringham/ez_pdf_tables"
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
-    "Programming Language :: Python :: 3.7",
     "Operating System :: OS Independent",
     "Typing :: Typed"
 ]

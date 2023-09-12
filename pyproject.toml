@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ez-pdf-tables"
-version = "1.0.2"
+version = "1.0.3"
 description = "Quickly make PDF tables."
 authors = ["Michael Everingham <lamerlink@live.com>"]
 license = "MIT License"
